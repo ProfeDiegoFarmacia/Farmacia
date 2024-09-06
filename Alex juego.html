@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Medicamentos - Uso Terapéutico</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 20px;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+        }
+
+        .boton {
+            background-color: #008cba;
+            color: white;
+            padding: 15px 30px;
+            margin: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        .boton:hover {
+            background-color: #005f5f;
+        }
+
+        #resultado {
+            margin-top: 30px;
+            font-size: 20px;
+            color: #555;
+        }
+
+        .medicamento {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Juego de Medicamentos - Uso Terapéutico</h1>
+    <p>¿Cuál es el uso terapéutico de este medicamento?</p>
+
+    <div class="container">
+        <!-- Nombre del medicamento -->
+        <div id="medicamento" class="medicamento"></div>
+        <button class="boton" onclick="mostrarGrupo()">Mostrar uso terapéutico</button>
+        <button class="boton" onclick="seleccionarMedicamentoAleatorio()">Siguiente</button>
+    </div>
+
+    <div id="resultado"></div>
+
+    <script>
+        // Lista de medicamentos y su grupo farmacológico
+        const medicamentos = [
+            { nombre: 'Abacavir y lamivudina', grupo: 'Antirretrovirales (Inhibidores de la transcriptasa inversa nucleósidos)' },
+            { nombre: 'Acetaminofén / fosfato de codeína', grupo: 'Analgésico y antipirético / Opioide' },
+            { nombre: 'Acetato de medroxiprogesterona', grupo: 'Progestágeno (Hormona sintética)' },
+            { nombre: 'Acetilcisteína', grupo: 'Mucolítico' },
+            { nombre: 'Aciclovir', grupo: 'Antiviral (Inhibidor de la síntesis de ADN)' },
+            { nombre: 'Ácido fusídico', grupo: 'Antibiótico (Inhibidor de la síntesis proteica)' },
+            { nombre: 'Amoxicilina', grupo: 'Antibiótico (Penicilina)' },
+            { nombre: 'Atazanavir / ritonavir', grupo: 'Antirretrovirales (Inhibidores de proteasa)' },
+            { nombre: 'Atorvastatina', grupo: 'Hipolipemiante (Inhibidor de la HMG-CoA reductasa)' },
+            { nombre: 'Azitromicina', grupo: 'Antibiótico (Macrólido)' },
+            { nombre: 'Bedoyecta', grupo: 'Multivitamínico (Vitaminas del complejo B)' },
+            { nombre: 'Betametasona', grupo: 'Corticosteroide' },
+            { nombre: 'Buscapina Fem', grupo: 'Antiespasmódico (Butilbromuro de hioscina)' },
+            { nombre: 'Calcitriol', grupo: 'Vitamina D (Análogo de la vitamina D3)' },
+            { nombre: 'Cefalexina', grupo: 'Antibiótico (Cefalosporina de primera generación)' },
+            { nombre: 'Cetirizina', grupo: 'Antihistamínico (Antagonista H1)' },
+            { nombre: 'Clindamicina', grupo: 'Antibiótico (Lincosamida)' },
+            { nombre: 'Diclofenaco sódico', grupo: 'Antiinflamatorio no esteroideo (AINE)' },
+            { nombre: 'Dicloxacilina', grupo: 'Antibiótico (Penicilina resistente a betalactamasa)' },
+            { nombre: 'Diosmectita', grupo: 'Antidiarreico (Agente protector gastrointestinal)' },
+            { nombre: 'Dipirona', grupo: 'Analgésico y antipirético' },
+            { nombre: 'Enalapril', grupo: 'Antihipertensivo (Inhibidor de la ECA)' },
+            { nombre: 'Escitalopram', grupo: 'Antidepresivo (Inhibidor selectivo de la recaptación de serotonina)' },
+            { nombre: 'Esomeprazol', grupo: 'Inhibidor de la bomba de protones (IBP)' },
+            { nombre: 'Espironolactona', grupo: 'Diurético ahorrador de potasio (Antagonista de aldosterona)' },
+            { nombre: 'Fluoxetina', grupo: 'Antidepresivo (Inhibidor selectivo de la recaptación de serotonina)' },
+            { nombre: 'Ibuprofeno', grupo: 'Antiinflamatorio no esteroideo (AINE)' },
+            { nombre: 'Ketorolaco', grupo: 'Antiinflamatorio no esteroideo (AINE)' },
+            { nombre: 'Lansoprazol', grupo: 'Inhibidor de la bomba de protones (IBP)' },
+            { nombre: 'Levotiroxina sódica', grupo: 'Hormona tiroidea' },
+            { nombre: 'Lidocaína', grupo: 'Anestésico local' },
+            { nombre: 'Meloxicam', grupo: 'Antiinflamatorio no esteroideo (AINE)' },
+            { nombre: 'Metformina', grupo: 'Antidiabético (Biguanida)' },
+            { nombre: 'Omeprazol', grupo: 'Inhibidor de la bomba de protones (IBP)' },
+            { nombre: 'Ondansetrón', grupo: 'Antiemético (Antagonista del receptor 5-HT3)' },
+            { nombre: 'Rivaroxaban', grupo: 'Anticoagulante (Inhibidor directo del factor Xa)' },
+            { nombre: 'Salbutamol', grupo: 'Broncodilatador (Agonista beta-2)' },
+            { nombre: 'Sertralina', grupo: 'Antidepresivo (Inhibidor selectivo de la recaptación de serotonina)' },
+            { nombre: 'Valsartán', grupo: 'Antihipertensivo (Antagonista del receptor de angiotensina II)' },
+            { nombre: 'Venlafaxina', grupo: 'Antidepresivo (Inhibidor de la recaptación de serotonina y noradrenalina)' },
+            { nombre: 'Zopiclona', grupo: 'Hipnótico (Benzodiacepina)' },
+            { nombre: 'Acetaminofén', grupo: 'Analgésico' },
+            { nombre: 'Ibuprofeno', grupo: 'Analgésico y antiinflamatorio' },
+            { nombre: 'Amoxicilina', grupo: 'Antibiótico (Penicilina)' },
+            { nombre: 'Losartán', grupo: 'Antihipertensivo' },
+            { nombre: 'Naproxeno', grupo: 'Antiinflamatorio (AINE)' },
+            { nombre: 'Vitamina C', grupo: 'Suplemento vitamínico' },
+            { nombre: 'Diclofenaco', grupo: 'Antiinflamatorio no esteroideo (AINE)' },
+            { nombre: 'Esomeprazol', grupo: 'Inhibidor de la bomba de protones (IBP)' },
+            { nombre: 'Cefalexina', grupo: 'Antibiótico (Cefalosporina de primera generación)' },
+            { nombre: 'Omeprazol', grupo: 'Inhibidor de la bomba de protones (IBP)' },
+            { nombre: 'Metformina', grupo: 'Antidiabético (Biguanida)' },
+            { nombre: 'Salbutamol', grupo: 'Broncodilatador (Agonista beta-2)' },
+            { nombre: 'Lorazepam', grupo: 'Ansiolítico (Benzodiacepina)' },
+            { nombre: 'Clonazepam', grupo: 'Ansiolítico (Benzodiacepina)' },
+            { nombre: 'Paracetamol', grupo: 'Analgésico y antipirético' },
+            { nombre: 'Simvastatina', grupo: 'Hipolipemiante (Inhibidor de la HMG-CoA reductasa)' },
+            { nombre: 'Furosemida', grupo: 'Diurético' },
+            { nombre: 'Amlodipino', grupo: 'Antihipertensivo (Bloqueador de los canales de calcio)' },
+            { nombre: 'Ranitidina', grupo: 'Antiácido (Antagonista H2)' },
+            { nombre: 'Captopril', grupo: 'Antihipertensivo (Inhibidor de la ECA)' },
+            { nombre: 'Alprazolam', grupo: 'Ansiolítico (Benzodiacepina)' },
+            { nombre: 'Loratadina', grupo: 'Antihistamínico (Antagonista H1)' },
+            { nombre: 'Carbamazepina', grupo: 'Anticonvulsivo' },
+            { nombre: 'Levotiroxina', grupo: 'Hormona tiroidea' },
+            { nombre: 'Sildenafil', grupo: 'Para la disfunción eréctil (Inhibidor de la fosfodiesterasa tipo 5)' },
+            { nombre: 'Diltiazem', grupo: 'Antihipertensivo (Bloqueador de los canales de calcio)' },
+            { nombre: 'Ciprofloxacina', grupo: 'Antibiótico (Quinolona)' },
+            { nombre: 'Levofloxacina', grupo: 'Antibiótico (Quinolona)' },
+            { nombre: 'Rosuvastatina', grupo: 'Hipolipemiante (Inhibidor de la HMG-CoA reductasa)' },
+            { nombre: 'Enalapril', grupo: 'Antihipertensivo (Inhibidor de la ECA)' }
+        ];
+
+        // Variable para el medicamento actual
+        let medicamentoActual = {};
+
+        // Función para seleccionar un medicamento aleatorio
+        function seleccionarMedicamentoAleatorio() {
+            const indiceAleatorio = Math.floor(Math.random() * medicamentos.length);
+            medicamentoActual = medicamentos[indiceAleatorio];
+            document.getElementById('medicamento').innerText = medicamentoActual.nombre;
+            document.getElementById('resultado').innerText = '';
+        }
+
+        // Función para mostrar el grupo farmacológico
+        function mostrarGrupo() {
+            if (medicamentoActual.nombre) {
+                document.getElementById('resultado').innerHTML = `<strong>${medicamentoActual.nombre}:</strong> ${medicamentoActual.grupo}`;
+            } else {
+                document.getElementById('resultado').innerText = 'Por favor, selecciona un medicamento.';
+            }
+        }
+
+        // Cargar el primer medicamento al cargar la página
+        window.onload = seleccionarMedicamentoAleatorio;
+    </script>
+
+</body>
+</html>
